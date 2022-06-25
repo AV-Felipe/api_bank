@@ -1,7 +1,8 @@
 import { Request, Response } from "express";
 
 class CustomerAccount {
-    constructor (req: Request, res: Response) {
+
+    public async create (req: Request, res: Response) {
         //TODO:
         // manda a req para o serviço de criação de conta
         // aguarda o retorno do serviço de criação de conta
