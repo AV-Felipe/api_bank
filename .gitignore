@@ -1,0 +1,12 @@
+# Ignore built ts files
+dist/**/*
+# API keys and secrets
+.env
+# OS metadata
+.DS_Store
+Thumbs.db
+*.insyncdl
+# Dependency directory
+node_modules
+# Database files
+postgres_data

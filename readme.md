@@ -1,0 +1,41 @@
+1. Criar uma API Bancária. Requisitos:
+    - Utilizar TypeScript
+    - Utilizar o pacote express e @types/express
+    - Utilizar o pacote uuid
+    - Utilizar variáveis de ambiente (.env)
+    - A API deve manipular os dados e transações de uma Conta Bancária
+    - Cada conta bancária deve possuir:
+        - Dados do dono:
+            - Nome
+            - Data de nascimento
+            - Email
+            - CPF
+            - ID (uuid)
+        - Dados da conta:
+            - Agência
+            - Dígito veri cador da agência
+            - Número da conta
+            - Dígito veri cador do número da conta
+            - Saldo
+            - ID (uuid)
+    - Todos os dados devem possuir validação, mesmo que mínima
+    - A API deve ser capaz de tratar exceções
+    - Todas as requisições feitas devem possuir um padrão de resposta
+
+    -Possuir endpoints para:
+        - Fazer depósitos (taxa de 1% sobre o valor depositado)
+        - Fazer transferências (taxa fixa de 1 real)
+        - Fazer saques (taxa fixa de 4 reais)
+        - Criação de conta
+        - Consulta de extrato
+    - Todos os endpoints devem estar devidamente integrados e funcionais, ou seja, o resultado de todas as requisições deve ser refletido no banco de dados
+    - Todas as transações devem possuir:
+        - Data e hora em que ocorreram
+        - ID único
+        - Valor transacionado
+        - Tipo de transação
+    - Seu banco de dados deve possuir uma tabela para:
+        - Clientes
+        - Contas bancárias
+        - Transações
+    - A aplicação deve ser transpilada e executada a partir do js
