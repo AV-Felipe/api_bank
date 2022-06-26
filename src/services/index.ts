@@ -1,0 +1,1 @@
+export {CreateCustomerAccount} from './create-new-account';
