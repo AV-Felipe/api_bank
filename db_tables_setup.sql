@@ -1,6 +1,6 @@
-
+CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 CREATE TABLE IF NOT EXISTS customers (
-	id uuid UNIQUE,
+	id uuid DEFAULT uuid_generate_v4 (),
 	full_name varchar(50) NOT NULL UNIQUE,
     email varchar(50) NOT NULL UNIQUE,
     cpf varchar(11) NOT NULL UNIQUE,

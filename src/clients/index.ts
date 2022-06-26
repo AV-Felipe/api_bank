@@ -1,0 +1,1 @@
+export {DbAccess} from './database/db-consumer';

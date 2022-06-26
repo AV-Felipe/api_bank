@@ -1,4 +1,4 @@
-import { Request, Response } from "express";
+import { Request, response, Response } from "express";
 import {CreateCustomerAccount} from '../services';
 
 class CustomerAccount {
@@ -18,23 +18,23 @@ class CustomerAccount {
 
             //TODO uuid should come from db and then be validated (or not) so to be appended on the response
 
-            if (!response.errors){
+            if (response.messages.length === 0){
                 res.status(201);
                 res.type('application/json');
-                res.send(response.user);
+                res.send(response.data);
             } else {
-                throw new Error(`${response.errors}`);
+                throw new Error(`${response.messages}`);
             }
 
         } catch (err) {
             // TODO improve error handling
             console.log(err);
-            const errorLog = String(err).trim().split("|");
-            console.log(errorLog);
-            const error = {error: err};
+            // const errorLog = String(err).trim().split("|");
+            // console.log(errorLog);
+            // const error = {error: err};
             res.status(400);
             res.type('application/json');
-            res.send({Errors: errorLog});
+            res.send({Errors: String(err)});
         }
 
         
