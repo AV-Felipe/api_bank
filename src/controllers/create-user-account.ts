@@ -16,16 +16,25 @@ class CustomerAccount {
             console.log(this.service)
             const response = await new this.service().routine(req.body);
 
-            res.status(201);
-            res.type('application/json');
-            res.send(response);
+            //TODO uuid should come from db and then be validated (or not) so to be appended on the response
+
+            if (!response.errors){
+                res.status(201);
+                res.type('application/json');
+                res.send(response.user);
+            } else {
+                throw new Error(`${response.errors}`);
+            }
 
         } catch (err) {
+            // TODO improve error handling
             console.log(err);
+            const errorLog = String(err).trim().split("|");
+            console.log(errorLog);
             const error = {error: err};
             res.status(400);
             res.type('application/json');
-            res.send(error);
+            res.send({Errors: errorLog});
         }
 
         

@@ -1,0 +1,1 @@
+export {CustomerDataValidation} from './customer-data-validator'
