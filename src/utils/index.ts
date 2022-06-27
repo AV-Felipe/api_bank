@@ -1,0 +1,1 @@
+export { ExceptionTreatment } from './error-handler';

@@ -11,9 +11,10 @@ class CreateCustomerAccount{
         console.log(typeof(newCustomer));
 
         const validatedCustomer = new CustomerDataValidation(newCustomer)
-
+        console.log("oi" + validatedCustomer.errors);
         if (validatedCustomer.errors){
-            let response: ApiResponse;
+            console.log("bad data")
+            let response: ApiResponse = {data: "", messages: []};
             response.messages = validatedCustomer.errors.trim().split("|");
             return response;
         }

@@ -1,5 +1,6 @@
-import { Request, response, Response } from "express";
+import { Request, Response } from "express";
 import {CreateCustomerAccount} from '../services';
+import {ExceptionTreatment} from '../utils';
 
 class CustomerAccount {
 
@@ -23,18 +24,27 @@ class CustomerAccount {
                 res.type('application/json');
                 res.send(response.data);
             } else {
-                throw new Error(`${response.messages}`);
+                //const error = new ExceptionTreatment(response);
+                console.log("erro flux" + response.messages)
+                console.log(typeof response.messages)
+                let error = new ExceptionTreatment(response).errorList
+                res.status(400);
+                res.type('application/json');
+                res.send({Errors: error});
+
+                //throw new Error(response.messages[0]);
             }
 
         } catch (err) {
             // TODO improve error handling
             console.log(err);
+            console.log(typeof err)
             // const errorLog = String(err).trim().split("|");
             // console.log(errorLog);
             // const error = {error: err};
-            res.status(400);
+            res.status(500);
             res.type('application/json');
-            res.send({Errors: String(err)});
+            res.send({Error: `${String(err).split(": ")[1]}`});
         }
 
         

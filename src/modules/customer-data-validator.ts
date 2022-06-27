@@ -32,7 +32,7 @@ class CustomerDataValidation {
 
 
         this.errors = this.errors.concat(`${validCpf.errors}${validDate.errors}${validEmail.errors}${validName.errors}${validUuid.errors}`);
-
+        console.log("no verificador geral" + this.errors)
         const userData: Partial<Customer> = {
             cpf: validCpf.cpf,
             birthdate: validDate.date,
