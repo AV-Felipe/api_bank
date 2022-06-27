@@ -4,6 +4,7 @@ CREATE TABLE IF NOT EXISTS customers (
 	full_name varchar(50) NOT NULL UNIQUE,
     email varchar(50) NOT NULL UNIQUE,
     cpf varchar(11) NOT NULL UNIQUE,
+	birthdate date NOT NULL,
 	password varchar(60),
 	created_at timestamp with time zone DEFAULT NOW(),
 	updated_at timestamp with time zone,

@@ -15,30 +15,29 @@ class CustomerDataValidation {
     private dateValidator = DateValidator;
     private emailValidator = EmailValidator;
     private nameValidator = NameValidator;
-    private uuidValidator = UuidValidator;
+    // private uuidValidator = UuidValidator;
 
-    public constructor(customer: Customer) {
+    public constructor(customer: Partial<Customer>) {
         this.errors = "";
         this.user = this.validate(customer);
     }
 
-    private validate(customer: Customer): Partial<Customer> {
+    private validate(customer: Partial<Customer>): Partial<Customer> {
 
         const validCpf = new this.cpfValidator(customer.cpf);
         const validDate = new this.dateValidator(customer.birthdate);
         const validEmail = new this.emailValidator(customer.email);
         const validName = new this.nameValidator(customer.name);
-        const validUuid = new this.uuidValidator(customer.id);
+        // const validUuid = new this.uuidValidator(customer.id);
 
 
-        this.errors = this.errors.concat(`${validCpf.errors}${validDate.errors}${validEmail.errors}${validName.errors}${validUuid.errors}`);
+        this.errors = this.errors.concat(`${validCpf.errors}${validDate.errors}${validEmail.errors}${validName.errors}`);
         console.log("no verificador geral" + this.errors)
         const userData: Partial<Customer> = {
             cpf: validCpf.cpf,
             birthdate: validDate.date,
             email: validEmail.email,
-            name: validName.name,
-            id: validUuid.id
+            name: validName.name
         };
 
         return userData;

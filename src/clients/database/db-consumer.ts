@@ -44,12 +44,12 @@ class DbAccess extends DbConnection {
         const client = await this.getClient();
 
         const queryString = `
-            INSERT INTO customers (full_name, email, cpf)
-            VALUES ($1, $2, $3)
-            RETURNING id, full_name, email, cpf;
+            INSERT INTO customers (full_name, email, cpf, birthdate)
+            VALUES ($1, $2, $3, $4)
+            RETURNING id, full_name, email, cpf, birthdate;
         `;
 
-        const parameters = [customer.name, customer.email, customer.cpf];
+        const parameters = [customer.name, customer.email, customer.cpf, customer.birthdate];
 
         let response: ApiResponse = {data: "", messages: []};
 

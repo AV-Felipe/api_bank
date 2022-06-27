@@ -5,7 +5,7 @@ import {DbAccess} from '../clients';
 class CreateCustomerAccount{
     public async routine(data: NewAccount): Promise<ApiResponse>{
         console.log(data)
-        const newCustomer: Customer = data.newcustomer;
+        const newCustomer: Partial<Customer> = data.newcustomer;
         const newAccount: Account = data.newaccount;
         console.log(newCustomer);
         console.log(typeof(newCustomer));

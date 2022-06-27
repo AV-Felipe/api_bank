@@ -1,7 +1,7 @@
 import {Customer, Account} from './index';
 
 interface NewAccount {
-    newcustomer: Customer,
+    newcustomer: Partial<Customer>,
     newaccount: Account
 }
 
