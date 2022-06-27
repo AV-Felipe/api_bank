@@ -4,6 +4,7 @@ interface Account {
     account: string,
     acverifier: string,
     balance: number,
+    owner: string,
     id: string
 }
 

@@ -14,9 +14,9 @@ CREATE TABLE IF NOT EXISTS customers (
 );
 
 CREATE TABLE IF NOT EXISTS accounts (
-	id uuid UNIQUE,
+	id uuid DEFAULT uuid_generate_v4 (),
     owner uuid NOT NULL,
-	ac_number varchar(5) NOT NULL,
+	ac_number serial,
     ac_digit varchar(1) NOT NULL,
    	ag_number varchar(4) NOT NULL,
     ag_digit varchar(1) NOT NULL,

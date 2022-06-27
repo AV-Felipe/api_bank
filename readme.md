@@ -13,9 +13,9 @@
             - ID (uuid)
         - Dados da conta:
             - Agência
-            - Dígito veri cador da agência
+            - Dígito verificador da agência
             - Número da conta
-            - Dígito veri cador do número da conta
+            - Dígito verificador do número da conta
             - Saldo
             - ID (uuid)
     - Todos os dados devem possuir validação, mesmo que mínima
