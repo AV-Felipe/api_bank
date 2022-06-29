@@ -2,12 +2,17 @@ import {Account, Customer, NewAccount, ApiResponse, Transaction} from '../models
 import {Operation, OperationStrings} from '../types';
 import {TransactionDataValidation} from '../modules';
 import {DbAccess} from '../clients';
+import { Request } from 'express';
 
 class AddNewTransaction{
-    public async routine(data: Partial<Transaction>): Promise<ApiResponse>{
-        // console.log(data)
-        // const newCustomer: Partial<Customer> = data.newcustomer;
+    public async routine(fullReq: Request): Promise<ApiResponse>{
+
+        const data = fullReq.body;
+        const route = fullReq.originalUrl.split('/');
+        const transaction = route[route.length - 1].toUpperCase()
+
         const accountOne: Partial<Transaction> = data;
+        accountOne.operation = transaction
         // console.log(newCustomer);
         // console.log(typeof(newCustomer));
 

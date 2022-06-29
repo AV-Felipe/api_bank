@@ -9,10 +9,11 @@ class TransactionController {
     public async create (req: Request, res: Response) {
 
         console.log(req.body);
+        console.log(req.originalUrl);
 
         try {
             console.log(this.service)
-            const response = await new this.service().routine(req.body);
+            const response = await new this.service().routine(req);
 
             //TODO uuid should come from db and then be validated (or not) so to be appended on the response
 

@@ -198,10 +198,47 @@ class DbAccess extends DbConnection {
                 `;
                 const responseC: any = await client.query(queryStringC, returnParameters);
 
-                response.data = responseC.rows[0];                
+                response.data = responseC.rows;                
 
                 await client.query('COMMIT');
             }
+
+            if (transaction.operation === 'WITHDRAW'){
+                
+                bankTax = 400;
+                parametersB.push(bankTax);
+
+
+                await client.query('BEGIN');
+                
+                const queryStringA = `
+                INSERT INTO transactions (account, operation, value, description)
+                VALUES ($1, 'D', $2, $3)
+                RETURNING id;
+                `;
+                const responseA: any = await client.query(queryStringA, parametersA);
+    
+                const queryStringB = `
+                INSERT INTO transactions (account, operation, value, description)
+                VALUES ($1, 'D', $3, $2)
+                RETURNING id;
+                `;
+                const responseB: any = await client.query(queryStringB, parametersB);
+
+                const returnParameters = [responseA.rows[0].id, responseB.rows[0].id]
+
+                const queryStringC = `
+                SELECT id, operation, value, description
+                FROM transactions
+                WHERE id IN ($1, $2);
+                `;
+                const responseC: any = await client.query(queryStringC, returnParameters);
+
+                response.data = responseC.rows;                
+
+                await client.query('COMMIT');
+            }
+
         } catch (err){
 
             await client.query('ROLLBACK');
