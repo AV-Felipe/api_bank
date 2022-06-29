@@ -1,6 +1,8 @@
 class AgencyDigitValidator {
     public errors: string;
     public digit: string;
+        // eslint-disable-next-line prefer-named-capture-group
+        private regex = /^[0-9]*$/;
 
     public constructor(digit: string) {
         this.errors = "";
@@ -9,7 +11,13 @@ class AgencyDigitValidator {
 
     private validate(digit: string): string {
         if (!(digit.length === 1)) {
-            this.errors += `acdigit: invalid digit|`;
+            this.errors += `agdigit: invalid digit length|`;
+
+            return "";
+        }
+
+        if (!this.regex.test(digit)) {
+            this.errors += "agdigit: use only numbers|";
 
             return "";
         }

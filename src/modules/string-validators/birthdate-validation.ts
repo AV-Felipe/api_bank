@@ -1,6 +1,7 @@
 class DateValidator {
     public date: string;
     public errors: string;
+    private regex = /^\d{4}\-(0[1-9]|1[012])\-(0[1-9]|[12][0-9]|3[01])$/;
 
     public constructor(date: string) {
         this.errors = "";
@@ -16,9 +17,9 @@ class DateValidator {
             return "";
         }
 
-        if (date.length < 10){
-            this.errors += "birthdate: invalid date format, must be yyyy-mm-dd|"
-            
+        if (!this.regex.test(date)) {
+            this.errors += "birthdate: must be a valid date in the yyyy-mm-dd format|";
+
             return "";
         }
 

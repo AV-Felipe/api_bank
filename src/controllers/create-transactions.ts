@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import {AddNewTransaction} from '../services';
 import {ExceptionTreatment} from '../utils';
+import {ApiResponse} from '../models'
 
 class TransactionController {
 
@@ -20,15 +21,16 @@ class TransactionController {
             if (response.messages.length === 0){
                 res.status(201);
                 res.type('application/json');
-                res.send(response.data);
+                res.send(response);
             } else {
                 //const error = new ExceptionTreatment(response);
                 console.log("erro flux" + response.messages)
                 console.log(typeof response.messages)
                 let error = new ExceptionTreatment(response).errorList
+                response.messages = error;
                 res.status(400);
                 res.type('application/json');
-                res.send({Errors: error});
+                res.send(response);
 
                 //throw new Error(response.messages[0]);
             }
@@ -40,9 +42,11 @@ class TransactionController {
             // const errorLog = String(err).trim().split("|");
             // console.log(errorLog);
             // const error = {error: err};
+            const response: ApiResponse = {data: "", messages: []};
+            response.messages.push(String(err).split(": ")[1])
             res.status(500);
             res.type('application/json');
-            res.send({Error: `${String(err).split(": ")[1]}`});
+            res.send(response);
         }
 
         

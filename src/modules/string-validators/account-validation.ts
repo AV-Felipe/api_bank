@@ -2,7 +2,7 @@ class AccountValidator {
     public account: string;
     public errors: string;
     // eslint-disable-next-line prefer-named-capture-group
-    private regex = /^[-+]?(\d+)$/;
+    private regex = /^[0-9]*$/;
 
     public constructor(account: string) {
         this.errors = "";
