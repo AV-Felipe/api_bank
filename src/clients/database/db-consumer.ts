@@ -92,7 +92,7 @@ class DbAccess extends DbConnection {
         const client = await this.getClient();
 
         const queryString = `
-            SELECT full_name, email, cpf, birthdate, ac_number, ac_digit, ag_number, ag_digit
+            SELECT full_name, email, cpf, birthdate, ac_number, ac_digit, ag_number, ag_digit, balance
             FROM customers
             INNER JOIN accounts ON customers.id = $1;
         `;
@@ -299,8 +299,75 @@ class DbAccess extends DbConnection {
 
         client.release();
 
+        let newBalance = { balance: 0 };
+
+        newBalance.balance = await this.updateBalance(account.id);
+
+        response.data.push(newBalance);
+
         return response;
     }
+
+    public async updateBalance(accountId: String): Promise<number> {
+
+        const client = await this.getClient();
+
+        let deposits = 0;
+        let withdraws = 0;
+
+        const queryStringA = `
+            SELECT SUM (value) AS total
+            FROM transactions
+            WHERE account = $1
+            AND operation = 'C'
+        `;
+
+        const parameters = [accountId];
+
+        let response: ApiResponse = { data: "", messages: [] };
+
+        try {
+            const queryResult: any = await client.query(queryStringA, parameters);
+            deposits = queryResult.rows[0].total;
+        } catch (err) {
+            response.messages.push(err);
+        }
+
+        const queryStringB = `
+            SELECT SUM (value) AS total
+            FROM transactions
+            WHERE account = $1
+            AND operation = 'D'
+        `;
+
+        try {
+            const queryResult: any = await client.query(queryStringB, parameters);
+            withdraws = queryResult.rows[0].total;
+        } catch (err) {
+            response.messages.push(err);
+        }
+
+        const returnValue = deposits - withdraws
+
+        const queryStringC = `
+            UPDATE accounts
+            SET balance = $2
+            WHERE id = $1
+            RETURNING balance;
+        `;
+
+        const parametersB = [accountId, returnValue];
+
+        try {
+            const queryResult: any = await client.query(queryStringC, parametersB);
+            response.data = queryResult.rows[0];
+        } catch (err) {
+            response.messages.push(err);
+        }
+
+        return returnValue;
+    }
+
 }
 
 export { DbAccess };

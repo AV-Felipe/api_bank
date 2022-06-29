@@ -20,6 +20,7 @@ CREATE TABLE IF NOT EXISTS accounts (
     ac_digit varchar(1) NOT NULL,
    	ag_number varchar(4) NOT NULL,
     ag_digit varchar(1) NOT NULL,
+	balance BIGINT NOT NULL DEFAULT 0,
 	created_at timestamp with time zone DEFAULT NOW(),
 	updated_at timestamp with time zone,
 	deleted_at int NOT NULL DEFAULT 0,
