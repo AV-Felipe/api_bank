@@ -1,6 +1,7 @@
 import { PoolClient } from 'pg';
 import {DbConnection} from '.';
-import {Customer, Account, ApiResponse} from '../../models'
+import {Operation, OperationStrings} from '../../types';
+import {Customer, Account, ApiResponse, Transaction} from '../../models'
 
 class DbAccess extends DbConnection {
     private async getClient(): Promise<PoolClient> {
@@ -118,6 +119,96 @@ class DbAccess extends DbConnection {
             console.log("to aqui 3 " + err);
             response.messages.push(err);
         }
+
+        client.release();
+        
+        return response;
+    }
+
+    public async getAccountId(transaction: Partial<Transaction>): Promise<ApiResponse> {
+        const client = await this.getClient();
+
+        const queryString = `
+            SELECT id
+            FROM accounts
+            WHERE ag_number = $1
+            AND ag_digit = $2
+            AND ac_number = $3
+            AND ac_digit = $4;
+        `;
+
+        const parameters = [transaction.agency, transaction.agverifier, transaction.account, transaction.acverifier];
+
+        let response: ApiResponse = {data: "", messages: []};
+
+        try{
+            const queryResult: any = await client.query(queryString, parameters);
+            console.log("retorno do pg:")
+            console.log(queryResult.rows[0]);
+            response.data = queryResult.rows[0].id;
+        } catch (err){
+            console.log("to aqui 3 " + err);
+            response.messages.push(err);
+        }
+
+        client.release();
+        
+        return response;
+    }
+
+    public async insertTransaction(transaction: Partial<Transaction>): Promise<ApiResponse> {
+        const client = await this.getClient();
+
+        let bankTax = 0;
+        const parametersA = [transaction.accountid, transaction.value, transaction.operation];
+        const parametersB: any[] = [transaction.accountid, OperationStrings[3]];
+
+        let response: ApiResponse = {data: "", messages: []};
+
+
+        try{
+            if (transaction.operation === 'DEPOSIT'){
+                
+                bankTax = Math.round(transaction.value * 0.01);
+                parametersB.push(bankTax);
+
+
+                await client.query('BEGIN');
+                
+                const queryStringA = `
+                INSERT INTO transactions (account, operation, value, description)
+                VALUES ($1, 'C', $2, $3)
+                RETURNING id;
+                `;
+                const responseA: any = await client.query(queryStringA, parametersA);
+    
+                const queryStringB = `
+                INSERT INTO transactions (account, operation, value, description)
+                VALUES ($1, 'D', $3, $2)
+                RETURNING id;
+                `;
+                const responseB: any = await client.query(queryStringB, parametersB);
+
+                const returnParameters = [responseA.rows[0].id, responseB.rows[0].id]
+
+                const queryStringC = `
+                SELECT id, operation, value, description
+                FROM transactions
+                WHERE id IN ($1, $2);
+                `;
+                const responseC: any = await client.query(queryStringC, returnParameters);
+
+                response.data = responseC.rows[0];                
+
+                await client.query('COMMIT');
+            }
+        } catch (err){
+
+            await client.query('ROLLBACK');
+            
+            response.messages.push(err);
+        }
+
 
         client.release();
         

@@ -26,5 +26,20 @@ CREATE TABLE IF NOT EXISTS accounts (
 	PRIMARY KEY (id)
 );
 
+CREATE TABLE IF NOT EXISTS transactions (
+	id uuid DEFAULT uuid_generate_v4 (),
+    account uuid NOT NULL,
+	operation varchar(1) NOT NULL,
+    value bigint NOT NULL,
+   	description varchar(10) NOT NULL,
+	created_at timestamp with time zone DEFAULT NOW(),
+	updated_at timestamp with time zone,
+	deleted_at int NOT NULL DEFAULT 0,
+	PRIMARY KEY (id)
+);
+
 ALTER TABLE IF EXISTS accounts
 	ADD CONSTRAINT customer_account_fk0 FOREIGN KEY (owner) REFERENCES customers(id);
+
+ALTER TABLE IF EXISTS transactions
+ADD CONSTRAINT account_fk0 FOREIGN KEY (account) REFERENCES accounts(id);
