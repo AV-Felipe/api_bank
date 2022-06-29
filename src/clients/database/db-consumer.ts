@@ -365,6 +365,8 @@ class DbAccess extends DbConnection {
             response.messages.push(err);
         }
 
+        client.release();
+        
         return returnValue;
     }
 
