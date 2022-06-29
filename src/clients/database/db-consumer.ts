@@ -294,6 +294,33 @@ class DbAccess extends DbConnection {
         
         return response;
     }
+
+    public async getSummary(account: Partial<Account>): Promise<ApiResponse> {
+        const client = await this.getClient();
+
+        const queryString = `
+            SELECT operation, value, description, created_at as date FROM transactions
+            Where account = $1;
+        `;
+
+        const parameters = [account.id];
+
+        let response: ApiResponse = {data: "", messages: []};
+
+        try{
+            const queryResult: any = await client.query(queryString, parameters);
+            console.log("retorno do pg:")
+            console.log(queryResult.rows[0]);
+            response.data = queryResult.rows;
+        } catch (err){
+            console.log("to aqui 3 " + err);
+            response.messages.push(err);
+        }
+
+        client.release();
+        
+        return response;
+    }
 }
 
 export {DbAccess};
