@@ -13,6 +13,33 @@ class AddNewTransaction{
 
         const accountOne: Partial<Transaction> = data;
         accountOne.operation = transaction
+
+        if (transaction === 'TRANSFER'){
+
+            const accountTwo: Partial<Transaction> = accountOne.destination;
+            accountTwo.operation = 'TRANSFER';
+            console.log(accountTwo);
+            const validatedTransaction = new TransactionDataValidation(accountTwo);
+
+            if (validatedTransaction.errors){
+                console.log("bad data on destination")
+                let response: ApiResponse = {data: "", messages: []};
+                response.messages = validatedTransaction.errors.trim().split("|");
+                return response;
+            }
+
+            const accountId = await new DbAccess().getAccountId(accountTwo);
+        
+            if (accountId.messages.length > 0){
+                console.log("mensagem recebida: " + accountId.messages);
+                return accountId;
+            }
+    
+            console.log("Account two id: " + String(accountId.data));
+    
+            accountOne.destination.accountid = accountId.data;
+        }
+
         // console.log(newCustomer);
         // console.log(typeof(newCustomer));
 
