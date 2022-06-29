@@ -1,7 +1,7 @@
 class AgencyValidator {
     public agency: string;
     public errors: string;
-    // eslint-disable-next-line prefer-named-capture-group
+
     private regex = /^[0-9]*$/;
 
     public constructor(account: string) {

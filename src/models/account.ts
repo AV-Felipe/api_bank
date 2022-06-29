@@ -8,4 +8,4 @@ interface Account {
     id: string
 }
 
-export {Account};
+export { Account };

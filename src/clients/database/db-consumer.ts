@@ -1,47 +1,42 @@
 import { PoolClient } from 'pg';
-import {DbConnection} from '.';
-import {Operation, OperationStrings} from '../../types';
-import {Customer, Account, ApiResponse, Transaction} from '../../models'
+import { DbConnection } from '.';
+import { OperationStrings } from '../../types';
+import { Customer, Account, ApiResponse, Transaction } from '../../models'
 
 class DbAccess extends DbConnection {
     private async getClient(): Promise<PoolClient> {
-        
+
         try {
             const client = await this.connectionPool.connect();
-    
-    
+
+
             const query = client.query;
             const release = client.release;
-    
+
             const timeoutId = setTimeout(() => {
                 console.log('A client has been checked out for more than 5 seconds!');
-                // console.log(`The last executed query on this client was: ${client.lastQuery}`);
             }, 5000);
-    
-            // client.query = (...args) => {
-            //     client.lastQuery = args;
-            //     return query.apply(client, args);
-            // }
-    
+
             client.release = () => {
                 clearTimeout(timeoutId);
-    
+
                 client.query = query;
                 client.release = release;
-    
+
                 return release.apply(client);
             }
-    
+
             return client
-    
+
         } catch (error) {
             console.log(error);
         }
-    
+
 
     }
 
     public async insertCustomer(customer: Partial<Customer>): Promise<ApiResponse> {
+
         const client = await this.getClient();
 
         const queryString = `
@@ -52,24 +47,22 @@ class DbAccess extends DbConnection {
 
         const parameters = [customer.name, customer.email, customer.cpf, customer.birthdate];
 
-        let response: ApiResponse = {data: "", messages: []};
+        let response: ApiResponse = { data: "", messages: [] };
 
-        try{
+        try {
             const queryResult: any = await client.query(queryString, parameters);
-            console.log("retorno do pg:")
-            console.log(queryResult.rows[0].id);
             response.data = queryResult.rows[0].id;
-        } catch (err){
-            console.log("to aqui " + err);
+        } catch (err) {
             response.messages.push(err);
         }
 
         client.release();
-        
+
         return response;
     }
 
     public async insertAccount(account: Partial<Account>): Promise<ApiResponse> {
+
         const client = await this.getClient();
 
         const queryString = `
@@ -80,24 +73,22 @@ class DbAccess extends DbConnection {
 
         const parameters = [account.acverifier, account.agency, account.agverifier, account.owner];
 
-        let response: ApiResponse = {data: "", messages: []};
+        let response: ApiResponse = { data: "", messages: [] };
 
-        try{
+        try {
             const queryResult: any = await client.query(queryString, parameters);
-            console.log("retorno do pg:")
-            console.log(queryResult.rows[0].id);
             response.data = queryResult.rows[0].id;
-        } catch (err){
-            console.log("to aqui 2 " + err);
+        } catch (err) {
             response.messages.push(err);
         }
 
         client.release();
-        
+
         return response;
     }
 
     public async getNewAccount(customerId: String): Promise<ApiResponse> {
+
         const client = await this.getClient();
 
         const queryString = `
@@ -105,27 +96,25 @@ class DbAccess extends DbConnection {
             FROM customers
             INNER JOIN accounts ON customers.id = $1;
         `;
-        console.log("vou procurar por: " + customerId + " ou\n" + String(customerId));
+
         const parameters = [customerId];
 
-        let response: ApiResponse = {data: "", messages: []};
+        let response: ApiResponse = { data: "", messages: [] };
 
-        try{
+        try {
             const queryResult: any = await client.query(queryString, parameters);
-            console.log("retorno do pg:")
-            console.log(queryResult.rows);
             response.data = queryResult.rows[0];
-        } catch (err){
-            console.log("to aqui 3 " + err);
+        } catch (err) {
             response.messages.push(err);
         }
 
         client.release();
-        
+
         return response;
     }
 
     public async getAccountId(transaction: Partial<Transaction>): Promise<ApiResponse> {
+
         const client = await this.getClient();
 
         const queryString = `
@@ -139,49 +128,45 @@ class DbAccess extends DbConnection {
 
         const parameters = [transaction.agency, transaction.agverifier, transaction.account, transaction.acverifier];
 
-        let response: ApiResponse = {data: "", messages: []};
+        let response: ApiResponse = { data: "", messages: [] };
 
-        try{
+        try {
             const queryResult: any = await client.query(queryString, parameters);
-            console.log("retorno do pg:")
-            console.log(queryResult.rows[0]);
             response.data = queryResult.rows[0].id;
-        } catch (err){
-            console.log("to aqui 3 " + err);
+        } catch (err) {
             response.messages.push(err);
         }
 
         client.release();
-        
+
         return response;
     }
 
     public async insertTransaction(transaction: Partial<Transaction>): Promise<ApiResponse> {
+
         const client = await this.getClient();
 
         let bankTax = 0;
         const parametersA = [transaction.accountid, transaction.value, transaction.operation];
         const parametersB: any[] = [transaction.accountid, OperationStrings[3]];
 
-        let response: ApiResponse = {data: "", messages: []};
+        let response: ApiResponse = { data: "", messages: [] };
 
+        try {
+            if (transaction.operation === 'DEPOSIT') {
 
-        try{
-            if (transaction.operation === 'DEPOSIT'){
-                
                 bankTax = Math.round(transaction.value * 0.01);
                 parametersB.push(bankTax);
 
-
                 await client.query('BEGIN');
-                
+
                 const queryStringA = `
                 INSERT INTO transactions (account, operation, value, description)
                 VALUES ($1, 'C', $2, $3)
                 RETURNING id;
                 `;
                 const responseA: any = await client.query(queryStringA, parametersA);
-    
+
                 const queryStringB = `
                 INSERT INTO transactions (account, operation, value, description)
                 VALUES ($1, 'D', $3, $2)
@@ -198,26 +183,25 @@ class DbAccess extends DbConnection {
                 `;
                 const responseC: any = await client.query(queryStringC, returnParameters);
 
-                response.data = responseC.rows;                
+                response.data = responseC.rows;
 
                 await client.query('COMMIT');
             }
 
-            if (transaction.operation === 'WITHDRAW'){
-                
+            if (transaction.operation === 'WITHDRAW') {
+
                 bankTax = 400;
                 parametersB.push(bankTax);
 
-
                 await client.query('BEGIN');
-                
+
                 const queryStringA = `
                 INSERT INTO transactions (account, operation, value, description)
                 VALUES ($1, 'D', $2, $3)
                 RETURNING id;
                 `;
                 const responseA: any = await client.query(queryStringA, parametersA);
-    
+
                 const queryStringB = `
                 INSERT INTO transactions (account, operation, value, description)
                 VALUES ($1, 'D', $3, $2)
@@ -234,26 +218,25 @@ class DbAccess extends DbConnection {
                 `;
                 const responseC: any = await client.query(queryStringC, returnParameters);
 
-                response.data = responseC.rows;                
+                response.data = responseC.rows;
 
                 await client.query('COMMIT');
             }
 
-            if (transaction.operation === 'TRANSFER'){
-                
+            if (transaction.operation === 'TRANSFER') {
+
                 bankTax = 100;
                 parametersB.push(bankTax);
 
-
                 await client.query('BEGIN');
-                
+
                 const queryStringA = `
                 INSERT INTO transactions (account, operation, value, description)
                 VALUES ($1, 'D', $2, $3)
                 RETURNING id;
                 `;
                 const responseA: any = await client.query(queryStringA, parametersA);
-    
+
                 const queryStringB = `
                 INSERT INTO transactions (account, operation, value, description)
                 VALUES ($1, 'D', $3, $2)
@@ -277,25 +260,25 @@ class DbAccess extends DbConnection {
                 `;
                 const responseD: any = await client.query(queryStringD, returnParameters);
 
-                response.data = responseD.rows;                
+                response.data = responseD.rows;
 
                 await client.query('COMMIT');
             }
 
-        } catch (err){
+        } catch (err) {
 
             await client.query('ROLLBACK');
-            
+
             response.messages.push(err);
         }
 
-
         client.release();
-        
+
         return response;
     }
 
     public async getSummary(account: Partial<Account>): Promise<ApiResponse> {
+
         const client = await this.getClient();
 
         const queryString = `
@@ -305,22 +288,19 @@ class DbAccess extends DbConnection {
 
         const parameters = [account.id];
 
-        let response: ApiResponse = {data: "", messages: []};
+        let response: ApiResponse = { data: "", messages: [] };
 
-        try{
+        try {
             const queryResult: any = await client.query(queryString, parameters);
-            console.log("retorno do pg:")
-            console.log(queryResult.rows[0]);
             response.data = queryResult.rows;
-        } catch (err){
-            console.log("to aqui 3 " + err);
+        } catch (err) {
             response.messages.push(err);
         }
 
         client.release();
-        
+
         return response;
     }
 }
 
-export {DbAccess};
+export { DbAccess };

@@ -1,6 +1,7 @@
 class NameValidator {
     public errors: string;
     public name: string;
+
     private regex = /^[a-z]+$/;
 
     public constructor(name: string) {

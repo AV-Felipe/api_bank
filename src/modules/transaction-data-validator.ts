@@ -36,7 +36,7 @@ class TransactionDataValidation {
 
 
         this.errors = this.errors.concat(`${validAccountDigit.errors}${validAccount.errors}${validAgencyDigit.errors}${validAgency.errors}${validOperation.errors}${validValue.errors}`);
-        console.log("no verificador geral" + this.errors)
+
         const validatedTransaction: Partial<Transaction> = {
             account: validAccount.account,
             acverifier: validAccountDigit.digit,
@@ -50,4 +50,4 @@ class TransactionDataValidation {
     }
 }
 
-export {TransactionDataValidation};
+export { TransactionDataValidation };

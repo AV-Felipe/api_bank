@@ -2,8 +2,7 @@ import {
     CpfValidator,
     DateValidator,
     EmailValidator,
-    NameValidator,
-    UuidValidator
+    NameValidator
 } from './string-validators';
 import { Customer } from '../models';
 
@@ -15,7 +14,6 @@ class CustomerDataValidation {
     private dateValidator = DateValidator;
     private emailValidator = EmailValidator;
     private nameValidator = NameValidator;
-    // private uuidValidator = UuidValidator;
 
     public constructor(customer: Partial<Customer>) {
         this.errors = "";
@@ -28,11 +26,10 @@ class CustomerDataValidation {
         const validDate = new this.dateValidator(customer.birthdate);
         const validEmail = new this.emailValidator(customer.email);
         const validName = new this.nameValidator(customer.name);
-        // const validUuid = new this.uuidValidator(customer.id);
 
 
         this.errors = this.errors.concat(`${validCpf.errors}${validDate.errors}${validEmail.errors}${validName.errors}`);
-        console.log("no verificador geral" + this.errors)
+
         const userData: Partial<Customer> = {
             cpf: validCpf.cpf,
             birthdate: validDate.date,
@@ -44,4 +41,4 @@ class CustomerDataValidation {
     }
 }
 
-export {CustomerDataValidation};
+export { CustomerDataValidation };

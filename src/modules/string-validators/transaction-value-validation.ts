@@ -15,6 +15,13 @@ class TransactionValueValidator {
             return NaN;
         }
 
+        if (!Number.isInteger(value)){
+
+            this.errors += "value: value must be expressed in cents as a integer|";
+
+            return NaN;
+        }
+
         return value;
     }
 }

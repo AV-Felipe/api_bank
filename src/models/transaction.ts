@@ -16,4 +16,4 @@ interface Transaction {
     }
 }
 
-export {Transaction};
+export { Transaction };

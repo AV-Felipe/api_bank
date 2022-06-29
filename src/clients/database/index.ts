@@ -1,10 +1,10 @@
-import {Pool} from 'pg';
-import {config} from '../../config';
+import { Pool } from 'pg';
+import { config } from '../../config';
 
 class DbConnection {
     protected connectionPool: Pool;
 
-    public constructor () {
+    public constructor() {
         this.connectionPool = new Pool({
             user: config.POSTGRES_USER,
             host: config.POSTGRES_HOST,

@@ -1,1 +1,1 @@
-export {Operation, OperationStrings} from './operations';
+export { Operation, OperationStrings } from './operations';

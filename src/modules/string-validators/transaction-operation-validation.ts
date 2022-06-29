@@ -1,4 +1,4 @@
-import {OperationStrings} from '../../types';
+import { OperationStrings } from '../../types';
 
 class TransactionOperationValidator {
     public errors: string;

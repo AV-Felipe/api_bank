@@ -1,7 +1,7 @@
 class AccountDigitValidator {
     public errors: string;
     public digit: string;
-    // eslint-disable-next-line prefer-named-capture-group
+
     private regex = /^[0-9]*$/;
 
     public constructor(digit: string) {

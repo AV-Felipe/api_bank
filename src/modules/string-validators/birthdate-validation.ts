@@ -1,6 +1,7 @@
 class DateValidator {
     public date: string;
     public errors: string;
+
     private regex = /^\d{4}\-(0[1-9]|1[012])\-(0[1-9]|[12][0-9]|3[01])$/;
 
     public constructor(date: string) {
@@ -9,8 +10,7 @@ class DateValidator {
     }
 
     private validate(date: string): string {
-        console.log(date)
-        console.log(new Date(date).getTime())
+
         if (!date) {
             this.errors += "birthdate: birthdate required|";
 
@@ -28,7 +28,7 @@ class DateValidator {
 
             return "";
         }
-        console.log("no verificador de data" + this.errors)
+
         return date.trim();
     }
 }

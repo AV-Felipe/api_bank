@@ -1,48 +1,46 @@
-import {Account, Customer, NewAccount, ApiResponse} from '../models';
-import {CustomerDataValidation} from '../modules/customer-data-validator';
-import {DbAccess} from '../clients';
+import { Account, Customer, NewAccount, ApiResponse } from '../models';
+import { CustomerDataValidation } from '../modules/customer-data-validator';
+import { DbAccess } from '../clients';
 
-class CreateCustomerAccount{
-    public async routine(data: NewAccount): Promise<ApiResponse>{
-        console.log(data)
+class CreateCustomerAccount {
+    public async routine(data: NewAccount): Promise<ApiResponse> {
+
         const newCustomer: Partial<Customer> = data.newcustomer;
         const newAccount: Partial<Account> = data.newaccount;
-        console.log(newCustomer);
-        console.log(typeof(newCustomer));
 
         const validatedCustomer = new CustomerDataValidation(newCustomer)
-        console.log("oi" + validatedCustomer.errors);
-        if (validatedCustomer.errors){
-            console.log("bad data")
-            let response: ApiResponse = {data: "", messages: []};
+
+        if (validatedCustomer.errors) {
+
+            let response: ApiResponse = { data: "", messages: [] };
             response.messages = validatedCustomer.errors.trim().split("|");
             return response;
+
         }
 
         const insertedCustomer = await new DbAccess().insertCustomer(validatedCustomer.user);
-        
-        if (insertedCustomer.messages.length > 0){
-            console.log("mensagem recebida: " + insertedCustomer.messages);
+
+        if (insertedCustomer.messages.length > 0) {
+
             return insertedCustomer;
+
         }
-        console.log("new user id: " + String(insertedCustomer.data));
-        
+
+        // sets the new account digit to one as default and relates it to the newly created user
         newAccount.acverifier = "1";
         newAccount.owner = insertedCustomer.data;
 
-        //TODO verification for agency and agency digit values
         const insertedAccount = await new DbAccess().insertAccount(newAccount);
 
-        if (insertedAccount.messages.length > 0){
+        if (insertedAccount.messages.length > 0) {
             return insertedAccount;
         }
-        console.log("new account id: " + String(insertedAccount.data));
 
         const createdAccount = await new DbAccess().getNewAccount(insertedCustomer.data)
-        
+
         return createdAccount;
-        //return newCustomer
+
     }
 }
 
-export {CreateCustomerAccount};
+export { CreateCustomerAccount };
